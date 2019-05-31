@@ -1,0 +1,35 @@
+:8888 {
+  # Always respond with 200 to the "Should we issue a new cert" question
+  status 200 /  
+}
+
+:443, :80 {
+
+    root site
+
+    redir {
+      if {scheme} is http
+      / https://{host}{uri}
+    }
+
+gzip
+
+
+  tls caddy@coconauts.net
+  tls {
+    # Always accept 
+    ask http://localhost:8888
+    max_certs 100
+  }
+
+ header / {
+        # Enable cross-site filter (XSS)
+        # and tell browser to block detected attacks
+        X-Frame-Options "Allow"
+        Content-Security-Policy "
+		default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';
+	"
+
+  }
+
+}

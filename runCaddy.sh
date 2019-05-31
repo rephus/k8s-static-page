@@ -1,0 +1,1 @@
+./caddy -agree -log stdout -email caddy@coconauts.net
